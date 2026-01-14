@@ -127,6 +127,13 @@ function addActionsForHtmlUI(){
 
   var segmentsSlide = document.getElementById('segmentsSlide');
   if (segmentsSlide) segmentsSlide.addEventListener('mouseup', function() { g_selectedSegments = parseInt(this.value); });
+
+  var beeBtn = document.getElementById('beeButton');
+  if (beeBtn) beeBtn.onclick = function(){ 
+    // Clear the canvas and draw the bee
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    drawBee();
+  };
 }
 
 function main() {
