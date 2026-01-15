@@ -105,6 +105,20 @@ function drawColoredTriangle(vertices, color) {
 
 // Function to draw initials "M.C." in white triangles at bottom left
 function drawInitials() {
+    // Check if required functions and variables are available
+    if (typeof drawColoredTriangle !== 'function') {
+        console.error('drawColoredTriangle function not found');
+        return;
+    }
+    if (typeof gl === 'undefined' || !gl) {
+        console.error('WebGL context not available');
+        return;
+    }
+    if (typeof u_FragColor === 'undefined' || !u_FragColor) {
+        console.error('u_FragColor uniform not available');
+        return;
+    }
+    
     const WHITE = [1.0, 1.0, 1.0, 1.0];
     
     // Position in bottom left corner

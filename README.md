@@ -2,6 +2,11 @@ website for hosting my submission - cse160 assignment 1
 
 # [website](https://mikechen04.github.io/cse160-asg1-website/)
 
+
+-----
+
+AI was used to assist with parts of the code, such as debugging and drawing the bee.
+
 -----
 
 - added a draw bee button which draws an example bee

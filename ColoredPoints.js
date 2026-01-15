@@ -138,8 +138,14 @@ function addActionsForHtmlUI(){
   if (beeBtn) beeBtn.onclick = function(){ 
     // Clear the canvas and draw the bee
     gl.clear(gl.COLOR_BUFFER_BIT);
-    drawBee();
-    drawInitials(); // Draw initials in bottom left
+    if (typeof drawBee === 'function') {
+      drawBee();
+    }
+    if (typeof drawInitials === 'function') {
+      drawInitials(); // Draw initials in bottom left
+    } else {
+      console.error('drawInitials function not found');
+    }
   };
 
   var beeDrawingBtn = document.getElementById('beeDrawingButton');
