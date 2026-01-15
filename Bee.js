@@ -102,3 +102,58 @@ function drawColoredTriangle(vertices, color) {
     gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
     drawTriangle(vertices);
 }
+
+// Function to draw initials "M.C." in white triangles at bottom left
+function drawInitials() {
+    const WHITE = [1.0, 1.0, 1.0, 1.0];
+    
+    // Position in bottom left corner
+    const startX = -0.9;
+    const startY = -0.9;
+    const letterHeight = 0.2;
+    const letterWidth = 0.15;
+    const lineThickness = 0.025;
+    const spacing = 0.08; // Space between M and C
+    
+    // Draw "M"
+    const mLeft = startX;
+    const mRight = startX + letterWidth;
+    const mTop = startY + letterHeight;
+    const mBottom = startY;
+    const mMidX = (mLeft + mRight) / 2;
+    const mMidY = mBottom + letterHeight * 0.6; // Point of the V in M
+    
+    // Left vertical line of M (thick line made of triangles)
+    drawColoredTriangle([mLeft, mTop, mLeft, mBottom, mLeft + lineThickness, mTop], WHITE);
+    drawColoredTriangle([mLeft, mBottom, mLeft + lineThickness, mBottom, mLeft + lineThickness, mTop], WHITE);
+    
+    // Left diagonal of M (from top left to middle point)
+    drawColoredTriangle([mLeft, mTop, mMidX, mMidY, mLeft + lineThickness, mTop], WHITE);
+    drawColoredTriangle([mLeft, mTop, mMidX, mMidY, mMidX - lineThickness * 0.5, mMidY + lineThickness * 0.5], WHITE);
+    
+    // Right diagonal of M (from middle point to top right)
+    drawColoredTriangle([mMidX, mMidY, mRight, mTop, mMidX + lineThickness * 0.5, mMidY + lineThickness * 0.5], WHITE);
+    drawColoredTriangle([mMidX, mMidY, mRight, mTop, mRight - lineThickness, mTop], WHITE);
+    
+    // Right vertical line of M
+    drawColoredTriangle([mRight, mTop, mRight, mBottom, mRight - lineThickness, mTop], WHITE);
+    drawColoredTriangle([mRight, mBottom, mRight - lineThickness, mBottom, mRight - lineThickness, mTop], WHITE);
+    
+    // Draw "C"
+    const cLeft = mRight + spacing;
+    const cRight = cLeft + letterWidth;
+    const cTop = startY + letterHeight;
+    const cBottom = startY;
+    
+    // Left vertical line of C
+    drawColoredTriangle([cLeft, cTop, cLeft, cBottom, cLeft + lineThickness, cTop], WHITE);
+    drawColoredTriangle([cLeft, cBottom, cLeft + lineThickness, cBottom, cLeft + lineThickness, cTop], WHITE);
+    
+    // Top horizontal line of C (curved inward)
+    drawColoredTriangle([cLeft, cTop, cRight - lineThickness * 1.5, cTop, cLeft, cTop - lineThickness], WHITE);
+    drawColoredTriangle([cLeft, cTop, cRight - lineThickness * 1.5, cTop, cRight - lineThickness * 1.5, cTop - lineThickness], WHITE);
+    
+    // Bottom horizontal line of C (curved inward)
+    drawColoredTriangle([cLeft, cBottom, cRight - lineThickness * 1.5, cBottom, cLeft, cBottom + lineThickness], WHITE);
+    drawColoredTriangle([cLeft, cBottom, cRight - lineThickness * 1.5, cBottom, cRight - lineThickness * 1.5, cBottom + lineThickness], WHITE);
+}

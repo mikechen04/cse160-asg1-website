@@ -36,8 +36,10 @@ let canvas;
 let gl;
 let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
 let g_selectedSize = 5.0;
-let g_selectedType = 0; // 0 for POINT, 1 for TRIANGLE, 2 for CIRCLE
+let g_selectedType = 0; // 0 for POINT, 1 for TRIANGLE, 2 for CIRCLE, 3 for PAINT
 let g_selectedSegments = 20; // Number of segments for circles
+let g_lastPaintPos = null; // Last position for paint stroke
+let g_isPainting = false; // Whether currently painting
 let a_Position;
 let u_FragColor;
 let u_Size;
@@ -93,6 +95,7 @@ function connectVariablesToGLSL() {
 const POINT = 0;
 const TRIANGLE = 1;
 const CIRCLE = 2;
+const PAINT = 3;
 
 function addActionsForHtmlUI(){
   var greenBtn = document.getElementById('green');
@@ -112,6 +115,9 @@ function addActionsForHtmlUI(){
   
   var circleBtn = document.getElementById('circleButton');
   if (circleBtn) circleBtn.onclick = function(){ g_selectedType = CIRCLE; };
+  
+  var paintBtn = document.getElementById('paintButton');
+  if (paintBtn) paintBtn.onclick = function(){ g_selectedType = PAINT; };
 
   var redSlide = document.getElementById('redSlide');
   if (redSlide) redSlide.addEventListener('mouseup', function() { g_selectedColor[0] = this.value / 100.0; });
@@ -133,6 +139,13 @@ function addActionsForHtmlUI(){
     // Clear the canvas and draw the bee
     gl.clear(gl.COLOR_BUFFER_BIT);
     drawBee();
+    drawInitials(); // Draw initials in bottom left
+  };
+
+  var beeDrawingBtn = document.getElementById('beeDrawingButton');
+  if (beeDrawingBtn) beeDrawingBtn.onclick = function(){ 
+    // Redirect to the bee drawing image
+    window.open('https://files.catbox.moe/hmk5sk.jpg', '_blank');
   };
 }
 
@@ -152,7 +165,25 @@ function main() {
 
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = click;
-  canvas.onmousemove = function(ev) { if (ev.buttons == 1) { click(ev); } };
+  canvas.onmousemove = function(ev) { 
+    if (ev.buttons == 1) { 
+      click(ev); 
+    }
+  };
+  canvas.onmouseup = function(ev) {
+    // Stop painting when mouse is released
+    if (g_selectedType == PAINT) {
+      g_isPainting = false;
+      g_lastPaintPos = null;
+    }
+  };
+  canvas.onmouseleave = function(ev) {
+    // Stop painting when mouse leaves canvas
+    if (g_selectedType == PAINT) {
+      g_isPainting = false;
+      g_lastPaintPos = null;
+    }
+  };
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -170,6 +201,31 @@ var g_sizes = [];  // The array to store the size of a point
 
 function click(ev) {
   let [x,y] = convertCoordinatesEventToGL(ev);
+
+  // Handle paint mode separately for smooth strokes
+  if (g_selectedType == PAINT) {
+    if (!g_isPainting) {
+      // Start painting
+      g_isPainting = true;
+      g_lastPaintPos = [x, y];
+      // Draw initial point
+      let point = new Point();
+      point.position = [x, y, 0.0];
+      point.color = g_selectedColor.slice();
+      point.size = g_selectedSize;
+      g_shapesList.push(point);
+      renderAllShapes();
+    } else {
+      // Continue painting - draw smooth stroke
+      drawPaintStroke(g_lastPaintPos[0], g_lastPaintPos[1], x, y);
+      g_lastPaintPos = [x, y];
+    }
+    return;
+  }
+
+  // For non-paint modes, reset painting state
+  g_isPainting = false;
+  g_lastPaintPos = null;
 
   let point;
   if (g_selectedType == POINT) {
@@ -197,6 +253,32 @@ function click(ev) {
   }
   */
 
+  renderAllShapes();
+}
+
+// Function to draw smooth paint stroke between two points
+function drawPaintStroke(x1, y1, x2, y2) {
+  // Calculate distance between points
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  
+  // Number of points to draw based on distance (ensures smooth stroke)
+  const numPoints = Math.max(2, Math.ceil(distance * 50)); // Adjust multiplier for smoothness
+  
+  // Draw points along the line for smooth stroke
+  for (let i = 0; i <= numPoints; i++) {
+    const t = i / numPoints;
+    const x = x1 + dx * t;
+    const y = y1 + dy * t;
+    
+    let point = new Point();
+    point.position = [x, y, 0.0];
+    point.color = g_selectedColor.slice();
+    point.size = g_selectedSize;
+    g_shapesList.push(point);
+  }
+  
   renderAllShapes();
 }
 

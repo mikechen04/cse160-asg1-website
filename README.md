@@ -9,3 +9,7 @@ website for hosting my submission - cse160 assignment 1
 - made the page look fancier by fading it in
 
 - put the page in the center and made everything more aligned
+
+- paint stroke button
+
+- bee drawing button that redirects to the paper drawing of the bee
