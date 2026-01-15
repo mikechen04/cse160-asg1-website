@@ -92,42 +92,16 @@ function drawBee() {
     drawColoredTriangle([bodyCenterX - bodyWidth * 0.3, headTop, bodyCenterX - bodyWidth * 2.0, headTop + 0.12, bodyCenterX - bodyWidth * 1.4, headTop + 0.15], DARK_GRAY);
     // Right antenna (mirrored)
     drawColoredTriangle([bodyCenterX + bodyWidth * 0.3, headTop, bodyCenterX + bodyWidth * 2.0, headTop + 0.12, bodyCenterX + bodyWidth * 1.2, headTop + 0.12], DARK_GRAY);
-}
 
-
-
-
-// Helper function to draw a triangle with a specific color
-function drawColoredTriangle(vertices, color) {
-    gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
-    drawTriangle(vertices);
-}
-
-// Function to draw initials "M.C." in white triangles at bottom left
-function drawInitials() {
-    // Check if required functions and variables are available
-    if (typeof drawColoredTriangle !== 'function') {
-        console.error('drawColoredTriangle function not found');
-        return;
-    }
-    if (typeof gl === 'undefined' || !gl) {
-        console.error('WebGL context not available');
-        return;
-    }
-    if (typeof u_FragColor === 'undefined' || !u_FragColor) {
-        console.error('u_FragColor uniform not available');
-        return;
-    }
-    
     const WHITE = [1.0, 1.0, 1.0, 1.0];
     
-    // Position in bottom left corner
-    const startX = -0.9;
-    const startY = -0.9;
-    const letterHeight = 0.2;
-    const letterWidth = 0.15;
-    const lineThickness = 0.025;
-    const spacing = 0.08; // Space between M and C
+    // Position centered inside the bee's thorax area
+    const startX = -0.12; // Center the initials horizontally (M and C together are about 0.24 wide)
+    const startY = -0.05; // Position lower in the bee's body
+    const letterHeight = 0.15; // Slightly smaller to fit inside
+    const letterWidth = 0.1; // Slightly smaller to fit inside
+    const lineThickness = 0.02; // Slightly thinner
+    const spacing = 0.05; // Space between M and C
     
     // Draw "M"
     const mLeft = startX;
@@ -170,4 +144,15 @@ function drawInitials() {
     // Bottom horizontal line of C (curved inward)
     drawColoredTriangle([cLeft, cBottom, cRight - lineThickness * 1.5, cBottom, cLeft, cBottom + lineThickness], WHITE);
     drawColoredTriangle([cLeft, cBottom, cRight - lineThickness * 1.5, cBottom, cRight - lineThickness * 1.5, cBottom + lineThickness], WHITE);
+
 }
+
+
+
+
+// Helper function to draw a triangle with a specific color
+function drawColoredTriangle(vertices, color) {
+    gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
+    drawTriangle(vertices);
+}
+   
